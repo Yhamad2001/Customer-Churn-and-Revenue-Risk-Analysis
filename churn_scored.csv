@@ -1,0 +1,21 @@
+customer_id,full_name,segment,region,industry,account_manager,plan_name,monthly_revenue,contract_type,status,churned,tenure_years,avg_usage_score,avg_logins,avg_features_used,billing_tickets,avg_satisfaction,risk_level,churn_probability,model_risk_label
+1020,TrueNorth Consulting,SMB,East,Consulting,Marcus Hill,Basic,175,Monthly,Churned,1,5.674,10.2,3.3,1.7,3,1.5,CRITICAL,0.939,Critical
+1013,Maple Street Media,SMB,South,Media,Dana Reeves,Basic,150,Monthly,Churned,1,6.7836,11.5,4,2,3,1.5,CRITICAL,0.958,Critical
+1018,RedRock Construction,Mid-Market,West,Construction,Sarah Lane,Professional,1050,Monthly,Churned,1,7.074,12.2,4.3,2,6,1.5,CRITICAL,0.983,Critical
+1007,GreenLeaf Foods,SMB,North,Food & Bev,Dana Reeves,Basic,180,Monthly,Churned,1,4.726,12.8,5,2,3,2,CRITICAL,0.877,Critical
+1010,JetStream Travel,SMB,West,Travel,Dana Reeves,Basic,220,Monthly,Churned,1,5.4822,14,5.3,2,3,1.5,CRITICAL,0.924,Critical
+1016,PineCrest Hotels,Mid-Market,East,Hospitality,Dana Reeves,Professional,900,Monthly,Churned,1,4.4986,15.2,6.3,2.3,6,1.33,CRITICAL,0.95,Critical
+1004,Delta Logistics,Mid-Market,South,Logistics,Sarah Lane,Professional,980,Monthly,Churned,1,6.5562,15.7,6.3,2.3,6,1.67,CRITICAL,0.973,Critical
+1002,BlueStar Retail,Mid-Market,West,Retail,Marcus Hill,Professional,1200,Monthly,Churned,1,5.7644,18.8,8,3,6,1.67,CRITICAL,0.956,Critical
+1017,QuickShip Couriers,SMB,South,Logistics,Marcus Hill,Basic,200,Monthly,Active,0,3.3781,47.2,17,5.7,0,4,MEDIUM,0.127,Low
+1005,Echo Marketing,SMB,East,Marketing,Marcus Hill,Basic,250,Monthly,Active,0,3.2384,54.8,20,6.7,0,4,MEDIUM,0.089,Low
+1014,Northgate Software,Mid-Market,West,Technology,Marcus Hill,Professional,1350,Monthly,Active,0,3.5699,65.2,27,8.3,0,4,LOW,0.055,Low
+1011,Keystone Partners,Mid-Market,North,Consulting,Marcus Hill,Professional,1100,Annual,Active,0,5.1288,70.2,30,8.7,0,5,LOW,0.051,Low
+1009,IronBridge Mfg,Mid-Market,South,Manufacturing,Sarah Lane,Professional,1450,Monthly,Active,0,3.8548,75.2,35.3,10,0,4,LOW,0.035,Low
+1012,LightPath Energy,Enterprise,East,Energy,Sarah Lane,Enterprise,4800,Annual,Active,0,3.0164,82.2,40,11,0,4,LOW,0.013,Low
+1019,SilverBay Analytics,Enterprise,North,Technology,Dana Reeves,Enterprise,4200,Annual,Active,0,3.9534,87,44,12,0,5,LOW,0.009,Low
+1001,Apex Solutions,Enterprise,East,Technology,Dana Reeves,Enterprise,4500,Annual,Active,0,5.1973,88.2,45,12,0,4.5,LOW,0.017,Low
+1015,Orion Pharma,Enterprise,North,Healthcare,Sarah Lane,Enterprise,5500,Annual,Active,0,6.1918,90.2,48,13,0,5,LOW,0.015,Low
+1003,CoreHealth Systems,Enterprise,North,Healthcare,Dana Reeves,Enterprise,5200,Annual,Active,0,4.3726,93.8,52,14,0,5,LOW,0.005,Low
+1008,Harbor Insurance,Enterprise,East,Insurance,Marcus Hill,Enterprise,7200,Annual,Active,0,6.9288,94.8,55,14.7,0,4,LOW,0.018,Low
+1006,Frontier Finance,Enterprise,West,Finance,Sarah Lane,Enterprise,6100,Annual,Active,0,6.0329,96.8,60,15.7,0,5,LOW,0.006,Low

@@ -1,0 +1,330 @@
+================================================================================
+CUSTOMER CHURN & REVENUE RISK ANALYSIS
+Project Writeup — Yousef Hamad
+Tools: SQL (MySQL) · Python · Tableau · Excel
+Timeline: October 2023 – December 2023
+================================================================================
+
+
+OVERVIEW
+--------
+This project builds a complete end-to-end churn analytics pipeline for a
+subscription-based business. Starting from raw customer, subscription, support,
+and product usage data stored in a normalized MySQL database, I used SQL to
+model and segment risk, Python to assign individual churn probability scores
+using logistic regression, Tableau to build an interactive dashboard for
+account managers and leadership, and Excel to deliver an executive summary
+with a live what-if scenario model.
+
+The dataset covers 20 customers across three segments — Enterprise, Mid-Market,
+and SMB — generating $46,705 in total active monthly recurring revenue. Of the
+20 customers, 8 have churned (40% overall churn rate) and 12 remain active.
+The 8 churned customers represent $4,855 in lost monthly revenue.
+
+The project answers three business-critical questions:
+  1. Which customers are most likely to churn and why?
+  2. How much revenue is currently at risk?
+  3. What is the financial impact of reducing churn?
+
+
+--------------------------------------------------------------------------------
+PART 1 — DATABASE DESIGN
+--------------------------------------------------------------------------------
+
+I designed a 4-table normalized MySQL schema to model all dimensions of the
+customer relationship:
+
+  customers
+  ---------
+  The central table. Stores account name, email, signup date, region, segment
+  (Enterprise / Mid-Market / SMB), assigned account manager, and industry.
+  20 accounts in total across 4 regions and 3 segments.
+
+  subscriptions
+  -------------
+  One row per customer. Tracks plan name (Basic, Professional, Enterprise),
+  monthly revenue, start and end date, contract type (Monthly vs Annual), and
+  status (Active or Churned). This is the primary churn signal source.
+
+  support_tickets
+  ---------------
+  All customer support interactions — category (Billing, Technical, Feature
+  Request, Account), priority level, satisfaction score (1–5), and whether
+  the ticket was resolved. 32 total tickets across the dataset.
+
+  product_usage
+  -------------
+  Monthly behavioral data per customer. Tracks login count, number of distinct
+  features used, reports exported, API calls, and a composite usage score
+  from 0–100. 60 total rows — 20 customers × 3 months of data each.
+
+The schema is fully normalized — no duplicated data, clear foreign keys from
+every table back to customers, and clean join paths for all analysis queries.
+
+
+--------------------------------------------------------------------------------
+PART 2 — SQL ANALYSIS
+--------------------------------------------------------------------------------
+
+I wrote 15+ queries organized into 5 sections, each feeding a different
+downstream output (Python, Tableau, or Excel).
+
+Section 1 — Revenue Overview
+  Calculated MRR and ARR by segment and plan, quantified revenue lost to churn,
+  and computed churn rate by segment. Key result: Enterprise had a 0% churn
+  rate, Mid-Market churned at 57.1%, and SMB churned at 66.7%.
+
+  MRR by plan (active customers only):
+    Enterprise plan  — $37,500/mo across 7 customers ($450,000 ARR)
+    Professional plan — $3,900/mo across 3 customers ($46,800 ARR)
+    Basic plan       — $450/mo across 2 customers ($5,400 ARR)
+
+Section 2 — Churn Risk Signals
+  Identified the two strongest behavioral signals in the data:
+
+  Signal 1 — Usage score collapse: Churned customers averaged a usage score
+  of 13.1 in the months before churn. Active customers averaged 81.5. That
+  is a 6x difference and the single clearest predictor in the entire dataset.
+
+  Signal 2 — Billing tickets: Every churned customer had at least 3 billing
+  tickets with satisfaction scores of 1.33–2.00. Every active customer had
+  zero billing tickets.
+
+  I built a risk classification query combining both signals into a single
+  CRITICAL / HIGH / MEDIUM / LOW label per customer. All 8 churned customers
+  classified as CRITICAL. 2 active SMB customers (QuickShip Couriers and Echo
+  Marketing) classified as MEDIUM based on lower but not alarming usage scores.
+
+Section 3 — Customer Health Score
+  Designed a composite health score formula:
+    health_score = (avg_usage_score × 0.5)
+                 + (avg_satisfaction × 10 × 0.3)
+                 + (min(tenure_years, 5) × 4 × 0.2)
+
+  Usage score carries the most weight (50%) because it is the strongest
+  predictor. Support satisfaction is secondary (30%). Tenure matters but
+  has diminishing returns past 5 years (20%).
+
+Section 4 — Usage Trend Analysis
+  Compared average usage metrics between Active and Churned customers:
+
+    Active customers:   avg usage score 81.5, avg logins 43.3/month
+    Churned customers:  avg usage score 13.1, avg logins  5.8/month
+
+  The gap is consistent across every behavioral metric — features used,
+  API calls, and reports exported all show the same 5–8x difference.
+
+Section 5 — Master Export
+  A single comprehensive query joining all 4 tables into one row per customer
+  with every feature needed for the Python model. Exported as churn_master.csv.
+  This file feeds directly into the logistic regression model.
+
+
+--------------------------------------------------------------------------------
+PART 3 — PYTHON CHURN MODEL
+--------------------------------------------------------------------------------
+
+File: Churn-Analysis_churn_model.py
+Input: churn_master.csv (20 rows, 1 per customer)
+Output: churn_scored.csv (same 20 rows + churn_probability + model_risk_label)
+
+The script does 4 things:
+
+  1. Loads churn_master.csv using pandas
+
+  2. Selects 7 behavioral features as model inputs:
+       avg_usage_score      — composite engagement metric (0–100)
+       avg_logins           — monthly login frequency
+       avg_features_used    — product breadth of use
+       billing_tickets      — count of billing-related support tickets
+       avg_satisfaction     — support satisfaction score (1–5)
+       tenure_years         — length of customer relationship
+       monthly_revenue      — contract value
+
+  3. Scales all features using StandardScaler (required for logistic
+     regression — ensures no single feature dominates due to scale
+     differences, e.g. revenue $175–$7,200 vs usage score 0–100)
+
+  4. Trains a logistic regression model and assigns a churn_probability
+     between 0 and 1 to every customer
+
+  5. Translates probability into a human-readable label:
+       >= 0.75 → Critical
+       >= 0.50 → High
+       >= 0.25 → Medium
+       < 0.25  → Low
+
+  6. Exports churn_scored.csv for Tableau
+
+Results from the model:
+  All 8 churned customers scored Critical (probability range: 0.877–0.983)
+  All 12 active customers scored Low (probability range: 0.005–0.127)
+  The model cleanly separated churned from active with no misclassifications
+
+The model's output confirmed the SQL analysis — the separation between
+churned and active customers is so clear in the behavioral data that even
+a simple logistic regression achieves near-perfect classification.
+
+
+--------------------------------------------------------------------------------
+PART 4 — TABLEAU DASHBOARD
+--------------------------------------------------------------------------------
+
+File: Churn Risk Dashboard.twb
+Data source: churn_scored.csv
+
+Built 4 sheets assembled into a single interactive dashboard:
+
+  Sheet 1 — Revenue Overview
+    Stacked bar chart of MRR by segment split by Active vs Churned status.
+    Shows at a glance where revenue is concentrated (Enterprise, all active)
+    and where churn has done the most damage (Mid-Market and SMB).
+
+  Sheet 2 — Churn Risk Heatmap
+    Segment × Region matrix colored by MRR. A filter control lets viewers
+    drill into CRITICAL / HIGH / MEDIUM / LOW risk tiers. Clicking any cell
+    filters all other charts on the dashboard simultaneously via a filter
+    action — making the heatmap a triage tool for account managers.
+
+  Sheet 3 — Customer Health Scatter (hero chart)
+    Every customer plotted by avg_usage_score (X axis) vs churn_probability
+    (Y axis), dot sized by monthly_revenue. Reference lines at usage = 40 and
+    probability = 0.5 create 4 quadrants. All 8 churned customers cluster in
+    the top-left danger zone (low usage, high probability). All 12 active
+    Enterprise customers cluster in the bottom-right healthy zone.
+    Hovering any dot shows customer name, segment, MRR, usage score,
+    churn probability, and risk label.
+
+  Sheet 4 — Usage by Risk Tier
+    Horizontal bar chart showing average usage score per risk tier split by
+    Active vs Churned status. A reference line at 40 marks the low-usage
+    threshold. This chart explains the why behind the scatter plot —
+    Critical tier customers have usage scores in the 10–19 range.
+
+  Dashboard filter action: clicking a cell on the heatmap filters all
+  4 charts to show only that segment and region combination.
+
+
+--------------------------------------------------------------------------------
+PART 5 — EXCEL EXECUTIVE SUMMARY
+--------------------------------------------------------------------------------
+
+File: Churn_Executive_Summary.xlsx
+4 tabs — Summary, Revenue Breakdown, At-Risk Customers, What-If Model
+
+  Tab 1 — Summary
+    4 KPI cards at the top:
+      Active Customers:    12
+      Total Active MRR:    $46,705
+      Customers at Risk:   8
+      Overall Churn Rate:  40%
+
+    Metrics table with full breakdown:
+      Total Active ARR:              $560,460
+      Revenue Lost to Churn/month:   $4,855
+      Enterprise Churn Rate:         0%
+      Mid-Market Churn Rate:         57.1%
+      SMB Churn Rate:                66.7%
+      Avg Churn Probability (Active): 3.67%
+
+    Source note referencing the logistic regression model and feature weights.
+
+  Tab 2 — Revenue Breakdown
+    MRR by plan table showing Enterprise at $37,500/mo (81% of active MRR),
+    Professional at $3,900/mo, and Basic at $450/mo. Paired with a churn
+    rate by segment table. Two charts: clustered bar for MRR by plan,
+    pie chart for churn rate distribution by segment.
+
+  Tab 3 — At-Risk Customers
+    All 20 customers sorted by risk level then MRR. The 8 churned customers
+    appear at the top all flagged Critical with churn probabilities between
+    0.877 and 0.983. Each row shows annual revenue at risk (monthly × 12)
+    so the dollar impact is immediately visible. Color coded — red for
+    Critical, green for Low. Designed to be handed directly to an account
+    management team as an action list.
+
+    Top 3 accounts by annual revenue at risk:
+      BlueStar Retail       $14,400/year  (probability: 0.956)
+      RedRock Construction  $12,600/year  (probability: 0.983)
+      Delta Logistics       $11,760/year  (probability: 0.973)
+
+  Tab 4 — What-If Scenario Model
+    Input cell (yellow): Target Churn Rate — set at 25%
+    All outputs recalculate automatically when this number changes.
+
+    At current target of 25%:
+      Churn rate reduction:       15 percentage points
+      Customers retained:         2
+      MRR recovered:              $7,784/month
+      Annual revenue recovered:   $93,410
+      3-year revenue impact:      $280,230
+
+    This tab gives leadership a single lever to model the financial case
+    for investing in churn reduction initiatives.
+
+
+--------------------------------------------------------------------------------
+KEY FINDINGS
+--------------------------------------------------------------------------------
+
+1. Usage score is the definitive predictor of churn. The gap between
+   active (avg 81.5) and churned (avg 13.1) customers is so pronounced
+   that usage score alone could classify most customers correctly. No
+   churned customer had a usage score above 19. No active customer had
+   a usage score below 47.
+
+2. Billing tickets are 100% correlated with churn in this dataset.
+   Every single churned customer had billing tickets with satisfaction
+   scores of 2 or below. Every single active customer had zero billing
+   tickets. A billing ticket with a low satisfaction score is the
+   strongest early warning signal available to an account manager.
+
+3. Contract type perfectly predicts retention. All 8 churned customers
+   were on monthly contracts. All 7 annual contract customers (Enterprise)
+   are still active. Monthly contract customers carry dramatically higher
+   churn risk — likely because there is no switching cost or commitment
+   anchoring them to the product.
+
+4. Enterprise segment is completely healthy. 0% churn rate, all on annual
+   contracts, all with usage scores above 82, zero billing tickets. The
+   risk is entirely concentrated in Mid-Market (57.1% churn) and SMB
+   (66.7% churn), both predominantly on monthly contracts.
+
+5. The what-if model shows that retaining just 2 additional customers
+   (reducing churn from 40% to 25%) recovers $93,410 in annual revenue.
+   Cutting churn to 15% recovers $280,230 over 3 years — a number that
+   justifies meaningful investment in customer success resources.
+
+
+--------------------------------------------------------------------------------
+FILES IN THIS PROJECT
+--------------------------------------------------------------------------------
+
+  Churn-Analysis_create_database.sql    Creates 4 tables, inserts all data
+  Churn-Analysis_queries.sql            15+ SQL queries in 5 sections
+  ChurnProject Files/
+    Churn-Analysis_churn_model.py       Logistic regression model (Python)
+    churn_master.csv                    SQL master export (model input)
+    churn_scored.csv                    Model output with churn probabilities
+    Churn Risk Dashboard.twb            Tableau dashboard workbook
+  Churn_Executive_Summary.xlsx          4-tab Excel executive summary
+
+
+--------------------------------------------------------------------------------
+HOW TO REPRODUCE
+--------------------------------------------------------------------------------
+
+  1. Run Churn-Analysis_create_database.sql in MySQL Workbench
+     (uncomment the first 2 lines before running)
+
+  2. Run Section 5 of Churn-Analysis_queries.sql
+     Export results as churn_master.csv
+
+  3. Place churn_master.csv and churn_model.py in the same folder
+     Run: python3 Churn-Analysis_churn_model.py
+     Output: churn_scored.csv
+
+  4. Open Tableau → connect to churn_scored.csv
+     Open Churn Risk Dashboard.twb
+
+  5. Open Churn_Executive_Summary.xlsx to view the executive summary

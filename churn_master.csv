@@ -1,0 +1,21 @@
+customer_id,full_name,segment,region,industry,account_manager,tenure_years,plan_name,monthly_revenue,contract_type,status,churned,avg_usage_score,avg_logins,avg_features_used,avg_api_calls,usage_score_drop,total_tickets,billing_tickets,avg_satisfaction,risk_level
+1020,"TrueNorth Consulting",SMB,East,Consulting,"Marcus Hill",5.6740,Basic,175.00,Monthly,Churned,1,10.2,3.3,1.7,47,14.5,2,3,1.50,CRITICAL
+1013,"Maple Street Media",SMB,South,Media,"Dana Reeves",6.7836,Basic,150.00,Monthly,Churned,1,11.5,4.0,2.0,60,14.5,2,3,1.50,CRITICAL
+1018,"RedRock Construction",Mid-Market,West,Construction,"Sarah Lane",7.0740,Professional,1050.00,Monthly,Churned,1,12.2,4.3,2.0,63,17.0,2,6,1.50,CRITICAL
+1007,"GreenLeaf Foods",SMB,North,"Food & Bev","Dana Reeves",4.7260,Basic,180.00,Monthly,Churned,1,12.8,5.0,2.0,60,14.0,2,3,2.00,CRITICAL
+1010,"JetStream Travel",SMB,West,Travel,"Dana Reeves",5.4822,Basic,220.00,Monthly,Churned,1,14.0,5.3,2.0,82,15.0,2,3,1.50,CRITICAL
+1016,"PineCrest Hotels",Mid-Market,East,Hospitality,"Dana Reeves",4.4986,Professional,900.00,Monthly,Churned,1,15.2,6.3,2.3,87,18.5,3,6,1.33,CRITICAL
+1004,"Delta Logistics",Mid-Market,South,Logistics,"Sarah Lane",6.5562,Professional,980.00,Monthly,Churned,1,15.7,6.3,2.3,100,16.0,3,6,1.67,CRITICAL
+1002,"BlueStar Retail",Mid-Market,West,Retail,"Marcus Hill",5.7644,Professional,1200.00,Monthly,Churned,1,18.8,8.0,3.0,123,18.0,3,6,1.67,CRITICAL
+1017,"QuickShip Couriers",SMB,South,Logistics,"Marcus Hill",3.3781,Basic,200.00,Monthly,Active,0,47.2,17.0,5.7,360,6.0,1,0,4.00,MEDIUM
+1005,"Echo Marketing",SMB,East,Marketing,"Marcus Hill",3.2384,Basic,250.00,Monthly,Active,0,54.8,20.0,6.7,443,5.0,1,0,4.00,MEDIUM
+1014,"Northgate Software",Mid-Market,West,Technology,"Marcus Hill",3.5699,Professional,1350.00,Monthly,Active,0,65.2,27.0,8.3,650,4.0,1,0,4.00,LOW
+1011,"Keystone Partners",Mid-Market,North,Consulting,"Marcus Hill",5.1288,Professional,1100.00,Annual,Active,0,70.2,30.0,8.7,743,4.0,1,0,5.00,LOW
+1009,"IronBridge Mfg",Mid-Market,South,Manufacturing,"Sarah Lane",3.8548,Professional,1450.00,Monthly,Active,0,75.2,35.3,10.0,900,5.5,1,0,4.00,LOW
+1012,"LightPath Energy",Enterprise,East,Energy,"Sarah Lane",3.0164,Enterprise,4800.00,Annual,Active,0,82.2,40.0,11.0,1100,4.5,1,0,4.00,LOW
+1019,"SilverBay Analytics",Enterprise,North,Technology,"Dana Reeves",3.9534,Enterprise,4200.00,Annual,Active,0,87.0,44.0,12.0,1417,4.0,1,0,5.00,LOW
+1001,"Apex Solutions",Enterprise,East,Technology,"Dana Reeves",5.1973,Enterprise,4500.00,Annual,Active,0,88.2,45.0,12.0,1217,6.0,2,0,4.50,LOW
+1015,"Orion Pharma",Enterprise,North,Healthcare,"Sarah Lane",6.1918,Enterprise,5500.00,Annual,Active,0,90.2,48.0,13.0,1617,3.5,1,0,5.00,LOW
+1003,"CoreHealth Systems",Enterprise,North,Healthcare,"Dana Reeves",4.3726,Enterprise,5200.00,Annual,Active,0,93.8,52.0,14.0,1817,4.5,1,0,5.00,LOW
+1008,"Harbor Insurance",Enterprise,East,Insurance,"Marcus Hill",6.9288,Enterprise,7200.00,Annual,Active,0,94.8,55.0,14.7,2000,2.5,1,0,4.00,LOW
+1006,"Frontier Finance",Enterprise,West,Finance,"Sarah Lane",6.0329,Enterprise,6100.00,Annual,Active,0,96.8,60.0,15.7,2200,2.5,1,0,5.00,LOW
